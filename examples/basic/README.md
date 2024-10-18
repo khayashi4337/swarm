@@ -1,37 +1,38 @@
-# Swarm basic
+# Swarm 基本
 
-This folder contains basic examples demonstrating core Swarm capabilities. These examples show the simplest implementations of Swarm, with one input message, and a corresponding output. The `simple_loop_no_helpers` has a while loop to demonstrate how to create an interactive Swarm session.
+このフォルダには、Swarm の基本機能を示す基本的な例が含まれています。これらの例は、Swarm の最もシンプルな実装を示しており、1つの入力メッセージに対して対応する出力が得られるものです。`simple_loop_no_helpers` は、対話型の Swarm セッションを作成する方法を示す while ループを含んでいます。
 
-### Examples
+### 例
 
 1. **agent_handoff.py**
 
-   - Demonstrates how to transfer a conversation from one agent to another.
-   - **Usage**: Transfers Spanish-speaking users from an English agent to a Spanish agent.
+   - 会話をあるエージェントから別のエージェントに移譲する方法を示します。
+   - **使用方法**: スペイン語を話すユーザーを英語エージェントからスペイン語エージェントに転送します。
 
 2. **bare_minimum.py**
 
-   - A bare minimum example showing the basic setup of an agent.
-   - **Usage**: Sets up an agent that responds to a simple user message.
+   - エージェントの基本的なセットアップを示す最小限の例です。
+   - **使用方法**: ユーザーのシンプルなメッセージに応答するエージェントを設定します。
 
 3. **context_variables.py**
 
-   - Shows how to use context variables within an agent.
-   - **Usage**: Uses context variables to greet a user by name and print account details.
+   - エージェント内でコンテキスト変数を使用する方法を示します。
+   - **使用方法**: コンテキスト変数を使用して、ユーザーに名前で挨拶し、アカウントの詳細を表示します。
 
 4. **function_calling.py**
 
-   - Demonstrates how to define and call functions from an agent.
-   - **Usage**: Sets up an agent that can respond with weather information for a given location.
+   - エージェントから関数を定義および呼び出す方法を示します。
+   - **使用方法**: 指定した場所の天気情報を応答できるエージェントを設定します。
 
 5. **simple_loop_no_helpers.py**
-   - An example of a simple interaction loop without using helper functions.
-   - **Usage**: Sets up a loop where the user can continuously interact with the agent, printing the conversation.
+   - ヘルパー関数を使用しないシンプルな対話ループの例です。
+   - **使用方法**: ユーザーがエージェントと継続的に対話できるループを設定し、会話を表示します。
 
-## Running the Examples
+## 例の実行方法
 
-To run any of the examples, use the following command:
+任意の例を実行するには、以下のコマンドを使用します：
 
 ```shell
 python3 <example_name>.py
 ```
+
