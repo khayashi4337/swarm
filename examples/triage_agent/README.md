@@ -1,29 +1,27 @@
-# Triage agent
+# トリアージエージェント
 
-This example is a Swarm containing a triage agent, which takes in user inputs and chooses whether to respond directly, or triage the request
-to a sales or refunds agent.
+この例は、トリアージエージェントを含むSwarmで、ユーザーからの入力を受け取り、それに直接応答するか、販売エージェントや返金エージェントにリクエストを振り分けるかを決定します。
 
-## Setup
+## セットアップ
 
-To run the triage agent Swarm:
+トリアージエージェントSwarmを実行するには、以下の手順に従ってください：
 
-1. Run
+1. 次のコマンドを実行します：
 
 ```shell
 python3 run.py
 ```
 
-## Evals
+## 評価
 
-> [!NOTE]
-> These evals are intended to be examples to demonstrate functionality, but will have to be updated and catered to your particular use case.
+> [!注意]
+> これらの評価は機能をデモンストレーションするための例であり、特定の使用ケースに応じて更新し、調整する必要があります。
 
-This example uses `Pytest` to run eval unit tests. We have two tests in the `evals.py` file, one which
-tests if we call the correct triage function when expected, and one which assesses if a conversation
-is 'successful', as defined in our prompt in `evals.py`.
+この例では、`Pytest`を使用して評価ユニットテストを実行します。`evals.py`ファイルには2つのテストがあり、1つは期待されるときに正しいトリアージ関数が呼び出されるかをテストし、もう1つは`evals.py`のプロンプトで定義されたように会話が「成功」したかどうかを評価します。
 
-To run the evals, run
+評価を実行するには、次のコマンドを実行します：
 
 ```shell
 pytest evals.py
 ```
+
