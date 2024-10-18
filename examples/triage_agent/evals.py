@@ -10,12 +10,12 @@ client = Swarm()
 # ユーザーとエージェント間の会話が与えられ、その会話が主な目標を達成しているかどうかを評価します。
 # エージェントが目標を達成しているかどうかを判断するために、目標内の指示とユーザーの反応を考慮します。
 CONVERSATIONAL_EVAL_SYSTEM_PROMPT = """
-You will be provided with a conversation between a user and an agent, as well as a main goal for the conversation.
-Your goal is to evaluate, based on the conversation, if the agent achieves the main goal or not.
+あなたには、ユーザーとエージェントの会話と、その会話の主要な目標が提供されます。
+あなたの目標は、その会話に基づいてエージェントが主要な目標を達成したかどうかを評価することです。
 
-To assess whether the agent manages to achieve the main goal, consider the instructions present in the main goal, as well as the way the user responds:
-is the answer satisfactory for the user or not, could the agent have done better considering the main goal?
-It is possible that the user is not satisfied with the answer, but the agent still achieves the main goal because it is following the instructions provided as part of the main goal.
+エージェントが主要な目標を達成できたかどうかを評価するために、主要な目標に含まれる指示と、ユーザーの反応を考慮してください。
+ユーザーにとって答えが満足のいくものであったか、エージェントが目標に基づいてもっと良い対応ができたかどうかを考慮します。
+ユーザーが答えに満足していない場合でも、エージェントが主要な目標に含まれる指示に従っているため、目標を達成したとみなされることがあります。
 """
 
 # 会話が成功したかどうかを評価する関数
@@ -42,8 +42,8 @@ def run_and_get_tool_calls(agent, query):
 @pytest.mark.parametrize(
     "query,function_name",
     [
-        ("I want to make a refund!", "transfer_to_refunds"),  # 返金をリクエストした場合、返金エージェントへの移行を期待
-        ("I want to talk to sales.", "transfer_to_sales"),  # 販売に関する問い合わせの場合、販売エージェントへの移行を期待
+        ("返金をしたいです！", "transfer_to_refunds"),  # 返金をリクエストした場合、返金エージェントへの移行を期待
+        ("販売担当と話したい。", "transfer_to_sales"),  # 販売に関する問い合わせの場合、販売エージェントへの移行を期待
     ],
 )
 def test_triage_agent_calls_correct_function(query, function_name):
@@ -57,16 +57,16 @@ def test_triage_agent_calls_correct_function(query, function_name):
     "messages",
     [
         [
-            {"role": "user", "content": "Who is the lead singer of U2"},
-            {"role": "assistant", "content": "Bono is the lead singer of U2."},
+            {"role": "user", "content": "U2のリードシンガーは誰ですか？"},
+            {"role": "assistant", "content": "U2のリードシンガーはボノです。"},
         ],
         [
-            {"role": "user", "content": "Hello!"},
-            {"role": "assistant", "content": "Hi there! How can I assist you today?"},
-            {"role": "user", "content": "I want to make a refund."},
+            {"role": "user", "content": "こんにちは！"},
+            {"role": "assistant", "content": "こんにちは！今日はどのようにお手伝いできますか？"},
+            {"role": "user", "content": "返金をしたいです。"},
             {"role": "tool", "tool_name": "transfer_to_refunds"},
-            {"role": "user", "content": "Thank you!"},
-            {"role": "assistant", "content": "You're welcome! Have a great day!"},
+            {"role": "user", "content": "ありがとうございます！"},
+            {"role": "assistant", "content": "どういたしまして！素晴らしい一日をお過ごしください！"},
         ],
     ],
 )
