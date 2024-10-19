@@ -1,4 +1,3 @@
-```python
 import datetime
 import random
 
@@ -129,5 +128,5 @@ for f in triage_agent.functions:
 if __name__ == "__main__":
     # デモループを実行
     run_demo_loop(triage_agent, debug=False)
-```
+
 
