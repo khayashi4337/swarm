@@ -1,29 +1,31 @@
-![Swarm Logo](assets/logo.png)
+こちらがSwarmのREADME.mdの日本語訳です。
 
-# Swarm (experimental, educational)
+![Swarm ロゴ](assets/logo.png)
 
-An educational framework exploring ergonomic, lightweight multi-agent orchestration.
+# Swarm（実験的、教育用）
+
+エルゴノミクスで軽量なマルチエージェントオーケストレーションを探索する教育的なフレームワーク。
 
 > [!WARNING]
-> Swarm is currently an experimental sample framework intended to explore ergonomic interfaces for multi-agent systems. It is not intended to be used in production, and therefore has no official support. (This also means we will not be reviewing PRs or issues!)
+> Swarmは現在、エルゴノミクスなインターフェースの探索を目的とした実験的なサンプルフレームワークです。プロダクション環境での使用を想定していないため、公式なサポートはありません。（このため、PRや問題のレビューも行いません！）
 >
-> The primary goal of Swarm is to showcase the handoff & routines patterns explored in the [Orchestrating Agents: Handoffs & Routines](https://cookbook.openai.com/examples/orchestrating_agents) cookbook. It is not meant as a standalone library, and is primarily for educational purposes.
+> Swarmの主な目的は、[Orchestrating Agents: Handoffs & Routines](https://cookbook.openai.com/examples/orchestrating_agents)クックブックで紹介されているハンドオフとルーチンパターンを示すことです。スタンドアロンのライブラリとして使用することは想定されておらず、主に教育目的です。
 
-## Install
+## インストール
 
-Requires Python 3.10+
+Python 3.10+ が必要です
 
 ```shell
 pip install git+ssh://git@github.com/openai/swarm.git
 ```
 
-or
+または
 
 ```shell
 pip install git+https://github.com/openai/swarm.git
 ```
 
-## Usage
+## 使用方法
 
 ```python
 from swarm import Swarm, Agent
@@ -35,77 +37,77 @@ def transfer_to_agent_b():
 
 
 agent_a = Agent(
-    name="Agent A",
-    instructions="You are a helpful agent.",
+    name="エージェントA",
+    instructions="あなたは役に立つエージェントです。",
     functions=[transfer_to_agent_b],
 )
 
 agent_b = Agent(
-    name="Agent B",
-    instructions="Only speak in Haikus.",
+    name="エージェントB",
+    instructions="俳句のみで話してください。",
 )
 
 response = client.run(
     agent=agent_a,
-    messages=[{"role": "user", "content": "I want to talk to agent B."}],
+    messages=[{"role": "user", "content": "エージェントBと話したいです。"}],
 )
 
 print(response.messages[-1]["content"])
 ```
 
 ```
-Hope glimmers brightly,
-New paths converge gracefully,
-What can I assist?
+希望が明るく輝き、
+新たな道が優雅に交わる、
+どうお手伝いしましょうか？
 ```
 
-## Table of Contents
+## 目次
 
-- [Overview](#overview)
-- [Examples](#examples)
-- [Documentation](#documentation)
-  - [Running Swarm](#running-swarm)
-  - [Agents](#agents)
-  - [Functions](#functions)
-  - [Streaming](#streaming)
-- [Evaluations](#evaluations)
-- [Utils](#utils)
+- [概要](#overview)
+- [例](#examples)
+- [ドキュメント](#documentation)
+  - [Swarmの実行](#running-swarm)
+  - [エージェント](#agents)
+  - [関数](#functions)
+  - [ストリーミング](#streaming)
+- [評価](#evaluations)
+- [ユーティリティ](#utils)
 
-# Overview
+# 概要
 
-Swarm focuses on making agent **coordination** and **execution** lightweight, highly controllable, and easily testable.
+Swarmは、エージェントの**コーディネーション**と**実行**を軽量で高度にコントロール可能で、簡単にテストできるようにすることを目的としています。
 
-It accomplishes this through two primitive abstractions: `Agent`s and **handoffs**. An `Agent` encompasses `instructions` and `tools`, and can at any point choose to hand off a conversation to another `Agent`.
+これを実現するために、Swarmでは2つの基本的な抽象概念を使用しています。それは`Agent`と**ハンドオフ**です。`Agent`は`instructions`と`tools`を包括し、任意のタイミングで会話を他の`Agent`にハンドオフすることができます。
 
-These primitives are powerful enough to express rich dynamics between tools and networks of agents, allowing you to build scalable, real-world solutions while avoiding a steep learning curve.
+これらのプリミティブは、ツールとエージェントのネットワーク間で豊富なダイナミクスを表現するのに十分な力を持ち、学習の負担を減らしながらスケーラブルな実用的ソリューションを構築することが可能です。
 
 > [!NOTE]
-> Swarm Agents are not related to Assistants in the Assistants API. They are named similarly for convenience, but are otherwise completely unrelated. Swarm is entirely powered by the Chat Completions API and is hence stateless between calls.
+> SwarmのエージェントはAssistants APIのアシスタントとは無関係です。同じ名前が付けられているのは利便性のためですが、それ以外は全く異なります。Swarmは完全にChat Completions APIを利用して動作しており、コール間で状態を保持しません。
 
-## Why Swarm
+## Swarmを選ぶ理由
 
-Swarm explores patterns that are lightweight, scalable, and highly customizable by design. Approaches similar to Swarm are best suited for situations dealing with a large number of independent capabilities and instructions that are difficult to encode into a single prompt.
+Swarmは、軽量でスケーラブル、かつ高度にカスタマイズ可能なパターンを探索します。Swarmのようなアプローチは、多数の独立した機能や指示を1つのプロンプトにエンコードするのが困難な場合に最も適しています。
 
-The Assistants API is a great option for developers looking for fully-hosted threads and built in memory management and retrieval. However, Swarm is an educational resource for developers curious to learn about multi-agent orchestration. Swarm runs (almost) entirely on the client and, much like the Chat Completions API, does not store state between calls.
+Assistants APIは完全にホストされたスレッドやメモリ管理・取得が組み込まれたものを探している開発者にとって素晴らしいオプションですが、Swarmはマルチエージェントオーケストレーションを学びたい開発者向けの教育リソースです。Swarmはクライアント側で（ほぼ）完全に動作し、Chat Completions APIと同様にコール間で状態を保存しません。
 
-# Examples
+# 例
 
-Check out `/examples` for inspiration! Learn more about each one in its README.
+インスピレーションを得るために `/examples` をご覧ください！各例の詳細については、そのREADMEをご覧ください。
 
-- [`basic`](examples/basic): Simple examples of fundamentals like setup, function calling, handoffs, and context variables
-- [`triage_agent`](examples/triage_agent): Simple example of setting up a basic triage step to hand off to the right agent
-- [`weather_agent`](examples/weather_agent): Simple example of function calling
-- [`airline`](examples/airline): A multi-agent setup for handling different customer service requests in an airline context.
-- [`support_bot`](examples/support_bot): A customer service bot which includes a user interface agent and a help center agent with several tools
-- [`personal_shopper`](examples/personal_shopper): A personal shopping agent that can help with making sales and refunding orders
+- [`basic`](examples/basic): セットアップ、関数呼び出し、ハンドオフ、コンテキスト変数などの基本的な例
+- [`triage_agent`](examples/triage_agent): 正しいエージェントに引き継ぐための基本的なトリアージ手順を設定する簡単な例
+- [`weather_agent`](examples/weather_agent): 関数呼び出しの簡単な例
+- [`airline`](examples/airline): 航空会社のコンテキストで異なる顧客サービス要求を処理するためのマルチエージェント設定
+- [`support_bot`](examples/support_bot): ユーザーインターフェースエージェントと複数のツールを持つヘルプセンターエージェントを含むカスタマーサービスボット
+- [`personal_shopper`](examples/personal_shopper): 販売や返品の手続きを支援するパーソナルショッピングエージェント
 
-# Documentation
+# ドキュメント
 
-![Swarm Diagram](assets/swarm_diagram.png)
+![Swarm 図](assets/swarm_diagram.png)
 
-## Running Swarm
+## Swarmの実行
 
-Start by instantiating a Swarm client (which internally just instantiates an `OpenAI` client).
+最初に、Swarmクライアントをインスタンス化します（内部的には`OpenAI`クライアントをインスタンス化するだけです）。
 
 ```python
 from swarm import Swarm
@@ -115,245 +117,39 @@ client = Swarm()
 
 ### `client.run()`
 
-Swarm's `run()` function is analogous to the `chat.completions.create()` function in the Chat Completions API – it takes `messages` and returns `messages` and saves no state between calls. Importantly, however, it also handles Agent function execution, hand-offs, context variable references, and can take multiple turns before returning to the user.
+Swarmの`run()`関数は、Chat Completions APIの`chat.completions.create()`関数に相当します。`messages`を受け取り、`messages`を返し、呼び出し間で状態を保存しません。しかし、`run()`はエージェントの関数実行、ハンドオフ、コンテキスト変数の参照を処理し、ユーザーに戻る前に複数回の対話を行うことができます。
 
-At its core, Swarm's `client.run()` implements the following loop:
+Swarmの`client.run()`は以下のループを実装しています：
 
-1. Get a completion from the current Agent
-2. Execute tool calls and append results
-3. Switch Agent if necessary
-4. Update context variables, if necessary
-5. If no new function calls, return
+1. 現在のエージェントからの完了を取得
+2. ツール呼び出しを実行し、結果を追加
+3. 必要に応じてエージェントを切り替え
+4. 必要に応じてコンテキスト変数を更新
+5. 新しい関数呼び出しがなければ、結果を返す
 
-#### Arguments
+#### 引数
 
-| Argument              | Type    | Description                                                                                                                                            | Default        |
-| --------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------- |
-| **agent**             | `Agent` | The (initial) agent to be called.                                                                                                                      | (required)     |
-| **messages**          | `List`  | A list of message objects, identical to [Chat Completions `messages`](https://platform.openai.com/docs/api-reference/chat/create#chat-create-messages) | (required)     |
-| **context_variables** | `dict`  | A dictionary of additional context variables, available to functions and Agent instructions                                                            | `{}`           |
-| **max_turns**         | `int`   | The maximum number of conversational turns allowed                                                                                                     | `float("inf")` |
-| **model_override**    | `str`   | An optional string to override the model being used by an Agent                                                                                        | `None`         |
-| **execute_tools**     | `bool`  | If `False`, interrupt execution and immediately returns `tool_calls` message when an Agent tries to call a function                                    | `True`         |
-| **stream**            | `bool`  | If `True`, enables streaming responses                                                                                                                 | `False`        |
-| **debug**             | `bool`  | If `True`, enables debug logging                                                                                                                       | `False`        |
+| 引数                 | 型      | 説明                                                                                               | デフォルト        |
+| -------------------- | ------- | ------------------------------------------------------------------------------------------------ | -------------- |
+| **agent**            | `Agent` | 呼び出される（最初の）エージェント                                                                 | （必須）        |
+| **messages**         | `List`  | メッセージオブジェクトのリスト。[Chat Completions `messages`](https://platform.openai.com/docs/api-reference/chat/create#chat-create-messages)と同じ形式 | （必須）        |
+| **context_variables**| `dict`  | 関数およびエージェントの指示に利用可能な追加のコンテキスト変数の辞書                                 | `{}`           |
+| **max_turns**        | `int`   | 許容される対話の最大回数                                                                           | `float("inf")` |
+| **model_override**   | `str`   | エージェントが使用するモデルを上書きするための任意の文字列                                         | `None`         |
+| **execute_tools**    | `bool`  | `False`の場合、エージェントが関数を呼び出した際にツール呼び出しメッセージを直ちに返し、実行を中断  | `True`         |
+| **stream**           | `bool`  | `True`の場合、ストリーミングレスポンスを有効にする                                                  | `False`        |
+| **debug**            | `bool`  | `True`の場合、デバッグログを有効にする                                                              | `False`        |
 
-Once `client.run()` is finished (after potentially multiple calls to agents and tools) it will return a `Response` containing all the relevant updated state. Specifically, the new `messages`, the last `Agent` to be called, and the most up-to-date `context_variables`. You can pass these values (plus new user messages) in to your next execution of `client.run()` to continue the interaction where it left off – much like `chat.completions.create()`. (The `run_demo_loop` function implements an example of a full execution loop in `/swarm/repl/repl.py`.)
+`client.run()`が終了すると、関連する更新された状態をすべて含む`Response`を返します。具体的には、新しい`messages`、最後に呼び出された`Agent`、および最新の`context_variables`です。これらの値（および新しいユーザーメッセージ）を次回の`client.run()`の実行に渡すことで、前回のやりとりを続けることができます。(`run_demo_loop`関数は、`/swarm/repl/repl.py`でフル実行ループの例を実装しています。）
 
-#### `Response` Fields
+#### `Response` フィールド
 
-| Field                 | Type    | Description                                                                                                                                                                                                                                                                  |
-| --------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **messages**          | `List`  | A list of message objects generated during the conversation. Very similar to [Chat Completions `messages`](https://platform.openai.com/docs/api-reference/chat/create#chat-create-messages), but with a `sender` field indicating which `Agent` the message originated from. |
-| **agent**             | `Agent` | The last agent to handle a message.                                                                                                                                                                                                                                          |
-| **context_variables** | `dict`  | The same as the input variables, plus any changes.                                                                                                                                                                                                                           |
+| フィールド             | 型      | 説明                                                                                                                                                                                                                                                           |
+| -------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **messages**         | `List`  | 対話中に生成されたメッセージオブジェクトのリスト。Chat Completionsの`messages`と非常に似ていますが、どの`Agent`からのメッセージかを示す`sender`フィールドが含まれています。                                                                                     |
+| **agent**            | `Agent` | 最後にメッセージを処理したエージェント。                                                                                                                                                                                                                         |
+| **context_variables**| `dict`  | 入力変数と同じですが、必要に応じて変更されたものです。                                                                                                                                                                                                          |
 
-## Agents
+## エージェント
 
-An `Agent` simply encapsulates a set of `instructions` with a set of `functions` (plus some additional settings below), and has the capability to hand off execution to another `Agent`.
-
-While it's tempting to personify an `Agent` as "someone who does X", it can also be used to represent a very specific workflow or step defined by a set of `instructions` and `functions` (e.g. a set of steps, a complex retrieval, single step of data transformation, etc). This allows `Agent`s to be composed into a network of "agents", "workflows", and "tasks", all represented by the same primitive.
-
-## `Agent` Fields
-
-| Field            | Type                     | Description                                                                   | Default                      |
-| ---------------- | ------------------------ | ----------------------------------------------------------------------------- | ---------------------------- |
-| **name**         | `str`                    | The name of the agent.                                                        | `"Agent"`                    |
-| **model**        | `str`                    | The model to be used by the agent.                                            | `"gpt-4o"`                   |
-| **instructions** | `str` or `func() -> str` | Instructions for the agent, can be a string or a callable returning a string. | `"You are a helpful agent."` |
-| **functions**    | `List`                   | A list of functions that the agent can call.                                  | `[]`                         |
-| **tool_choice**  | `str`                    | The tool choice for the agent, if any.                                        | `None`                       |
-
-### Instructions
-
-`Agent` `instructions` are directly converted into the `system` prompt of a conversation (as the first message). Only the `instructions` of the active `Agent` will be present at any given time (e.g. if there is an `Agent` handoff, the `system` prompt will change, but the chat history will not.)
-
-```python
-agent = Agent(
-   instructions="You are a helpful agent."
-)
-```
-
-The `instructions` can either be a regular `str`, or a function that returns a `str`. The function can optionally receive a `context_variables` parameter, which will be populated by the `context_variables` passed into `client.run()`.
-
-```python
-def instructions(context_variables):
-   user_name = context_variables["user_name"]
-   return f"Help the user, {user_name}, do whatever they want."
-
-agent = Agent(
-   instructions=instructions
-)
-response = client.run(
-   agent=agent,
-   messages=[{"role":"user", "content": "Hi!"}],
-   context_variables={"user_name":"John"}
-)
-print(response.messages[-1]["content"])
-```
-
-```
-Hi John, how can I assist you today?
-```
-
-## Functions
-
-- Swarm `Agent`s can call python functions directly.
-- Function should usually return a `str` (values will be attempted to be cast as a `str`).
-- If a function returns an `Agent`, execution will be transferred to that `Agent`.
-- If a function defines a `context_variables` parameter, it will be populated by the `context_variables` passed into `client.run()`.
-
-```python
-def greet(context_variables, language):
-   user_name = context_variables["user_name"]
-   greeting = "Hola" if language.lower() == "spanish" else "Hello"
-   print(f"{greeting}, {user_name}!")
-   return "Done"
-
-agent = Agent(
-   functions=[greet]
-)
-
-client.run(
-   agent=agent,
-   messages=[{"role": "user", "content": "Usa greet() por favor."}],
-   context_variables={"user_name": "John"}
-)
-```
-
-```
-Hola, John!
-```
-
-- If an `Agent` function call has an error (missing function, wrong argument, error) an error response will be appended to the chat so the `Agent` can recover gracefully.
-- If multiple functions are called by the `Agent`, they will be executed in that order.
-
-### Handoffs and Updating Context Variables
-
-An `Agent` can hand off to another `Agent` by returning it in a `function`.
-
-```python
-sales_agent = Agent(name="Sales Agent")
-
-def transfer_to_sales():
-   return sales_agent
-
-agent = Agent(functions=[transfer_to_sales])
-
-response = client.run(agent, [{"role":"user", "content":"Transfer me to sales."}])
-print(response.agent.name)
-```
-
-```
-Sales Agent
-```
-
-It can also update the `context_variables` by returning a more complete `Result` object. This can also contain a `value` and an `agent`, in case you want a single function to return a value, update the agent, and update the context variables (or any subset of the three).
-
-```python
-sales_agent = Agent(name="Sales Agent")
-
-def talk_to_sales():
-   print("Hello, World!")
-   return Result(
-       value="Done",
-       agent=sales_agent,
-       context_variables={"department": "sales"}
-   )
-
-agent = Agent(functions=[talk_to_sales])
-
-response = client.run(
-   agent=agent,
-   messages=[{"role": "user", "content": "Transfer me to sales"}],
-   context_variables={"user_name": "John"}
-)
-print(response.agent.name)
-print(response.context_variables)
-```
-
-```
-Sales Agent
-{'department': 'sales', 'user_name': 'John'}
-```
-
-> [!NOTE]
-> If an `Agent` calls multiple functions to hand-off to an `Agent`, only the last handoff function will be used.
-
-### Function Schemas
-
-Swarm automatically converts functions into a JSON Schema that is passed into Chat Completions `tools`.
-
-- Docstrings are turned into the function `description`.
-- Parameters without default values are set to `required`.
-- Type hints are mapped to the parameter's `type` (and default to `string`).
-- Per-parameter descriptions are not explicitly supported, but should work similarly if just added in the docstring. (In the future docstring argument parsing may be added.)
-
-```python
-def greet(name, age: int, location: str = "New York"):
-   """Greets the user. Make sure to get their name and age before calling.
-
-   Args:
-      name: Name of the user.
-      age: Age of the user.
-      location: Best place on earth.
-   """
-   print(f"Hello {name}, glad you are {age} in {location}!")
-```
-
-```javascript
-{
-   "type": "function",
-   "function": {
-      "name": "greet",
-      "description": "Greets the user. Make sure to get their name and age before calling.\n\nArgs:\n   name: Name of the user.\n   age: Age of the user.\n   location: Best place on earth.",
-      "parameters": {
-         "type": "object",
-         "properties": {
-            "name": {"type": "string"},
-            "age": {"type": "integer"},
-            "location": {"type": "string"}
-         },
-         "required": ["name", "age"]
-      }
-   }
-}
-```
-
-## Streaming
-
-```python
-stream = client.run(agent, messages, stream=True)
-for chunk in stream:
-   print(chunk)
-```
-
-Uses the same events as [Chat Completions API streaming](https://platform.openai.com/docs/api-reference/streaming). See `process_and_print_streaming_response` in `/swarm/repl/repl.py` as an example.
-
-Two new event types have been added:
-
-- `{"delim":"start"}` and `{"delim":"end"}`, to signal each time an `Agent` handles a single message (response or function call). This helps identify switches between `Agent`s.
-- `{"response": Response}` will return a `Response` object at the end of a stream with the aggregated (complete) response, for convenience.
-
-# Evaluations
-
-Evaluations are crucial to any project, and we encourage developers to bring their own eval suites to test the performance of their swarms. For reference, we have some examples for how to eval swarm in the `airline`, `weather_agent` and `triage_agent` quickstart examples. See the READMEs for more details.
-
-# Utils
-
-Use the `run_demo_loop` to test out your swarm! This will run a REPL on your command line. Supports streaming.
-
-```python
-from swarm.repl import run_demo_loop
-...
-run_demo_loop(agent, stream=True)
-```
-
-# Core Contributors
-
-- Ilan Bigio - [ibigio](https://github.com/ibigio)
-- James Hills - [jhills20](https://github.com/jhills20)
-- Shyamal Anadkat - [shyamal-anadkat](https://github.com/shyamal-anadkat)
-- Charu Jaiswal - [charuj](https://github.com/charuj)
-- Colin Jarvis - [colin-openai](https://github.com/colin-openai)
-- Katia Gil Guzman - [katia-openai](https://github.com/katia-openai)
+`Agent`は単に`instructions`と`functions`をセットにしたもので、他の`Agent`に実行をハンドオフする能力を持ちます。
