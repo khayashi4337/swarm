@@ -1,5 +1,3 @@
-こちらがSwarmのREADME.mdの日本語訳です。
-
 ![Swarm ロゴ](assets/logo.png)
 
 # Swarm（実験的、教育用）
