@@ -4,9 +4,9 @@ from tests.mock_client import MockOpenAIClient, create_mock_response
 from unittest.mock import Mock
 import json
 
-DEFAULT_RESPONSE_CONTENT = "sample response content"
+DEFAULT_RESPONSE_CONTENT = "サンプルレスポンス内容"
 
-
+# MockOpenAIClientを用いたテストで共通して使用するfixture
 @pytest.fixture
 def mock_openai_client():
     m = MockOpenAIClient()
@@ -15,35 +15,35 @@ def mock_openai_client():
     )
     return m
 
-
+# シンプルなメッセージを使ったrun関数のテスト
 def test_run_with_simple_message(mock_openai_client: MockOpenAIClient):
     agent = Agent()
-    # set up client and run
+    # クライアントを設定し実行
     client = Swarm(client=mock_openai_client)
-    messages = [{"role": "user", "content": "Hello, how are you?"}]
+    messages = [{"role": "user", "content": "こんにちは、調子はどうですか？"}]
     response = client.run(agent=agent, messages=messages)
 
-    # assert response content
+    # レスポンス内容をアサート
     assert response.messages[-1]["role"] == "assistant"
     assert response.messages[-1]["content"] == DEFAULT_RESPONSE_CONTENT
 
-
+# ツール呼び出しのテスト
 def test_tool_call(mock_openai_client: MockOpenAIClient):
-    expected_location = "San Francisco"
+    expected_location = "サンフランシスコ"
 
-    # set up mock to record function calls
+    # モックを設定し、関数呼び出しを記録
     get_weather_mock = Mock()
 
     def get_weather(location):
         get_weather_mock(location=location)
-        return "It's sunny today."
+        return "今日は晴れです。"
 
-    agent = Agent(name="Test Agent", functions=[get_weather])
+    agent = Agent(name="テストエージェント", functions=[get_weather])
     messages = [
-        {"role": "user", "content": "What's the weather like in San Francisco?"}
+        {"role": "user", "content": "サンフランシスコの天気はどうですか？"}
     ]
 
-    # set mock to return a response that triggers function call
+    # 関数呼び出しをトリガーするレスポンスを返すようモックを設定
     mock_openai_client.set_sequential_responses(
         [
             create_mock_response(
@@ -58,7 +58,7 @@ def test_tool_call(mock_openai_client: MockOpenAIClient):
         ]
     )
 
-    # set up client and run
+    # クライアントを設定し実行
     client = Swarm(client=mock_openai_client)
     response = client.run(agent=agent, messages=messages)
 
@@ -66,23 +66,23 @@ def test_tool_call(mock_openai_client: MockOpenAIClient):
     assert response.messages[-1]["role"] == "assistant"
     assert response.messages[-1]["content"] == DEFAULT_RESPONSE_CONTENT
 
-
+# execute_toolsをFalseに設定した際のツール呼び出しテスト
 def test_execute_tools_false(mock_openai_client: MockOpenAIClient):
-    expected_location = "San Francisco"
+    expected_location = "サンフランシスコ"
 
-    # set up mock to record function calls
+    # モックを設定し、関数呼び出しを記録
     get_weather_mock = Mock()
 
     def get_weather(location):
         get_weather_mock(location=location)
-        return "It's sunny today."
+        return "今日は晴れです。"
 
-    agent = Agent(name="Test Agent", functions=[get_weather])
+    agent = Agent(name="テストエージェント", functions=[get_weather])
     messages = [
-        {"role": "user", "content": "What's the weather like in San Francisco?"}
+        {"role": "user", "content": "サンフランシスコの天気はどうですか？"}
     ]
 
-    # set mock to return a response that triggers function call
+    # 関数呼び出しをトリガーするレスポンスを返すようモックを設定
     mock_openai_client.set_sequential_responses(
         [
             create_mock_response(
@@ -97,15 +97,15 @@ def test_execute_tools_false(mock_openai_client: MockOpenAIClient):
         ]
     )
 
-    # set up client and run
+    # クライアントを設定し実行（ツールを実行しない設定）
     client = Swarm(client=mock_openai_client)
     response = client.run(agent=agent, messages=messages, execute_tools=False)
     print(response)
 
-    # assert function not called
+    # 関数が呼び出されていないことをアサート
     get_weather_mock.assert_not_called()
 
-    # assert tool call is present in last response
+    # 最後のレスポンスにツール呼び出しが含まれていることをアサート
     tool_calls = response.messages[-1].get("tool_calls")
     assert tool_calls is not None and len(tool_calls) == 1
     tool_call = tool_calls[0]
@@ -114,15 +114,15 @@ def test_execute_tools_false(mock_openai_client: MockOpenAIClient):
         "location": expected_location
     }
 
-
+# エージェント間の引き継ぎのテスト
 def test_handoff(mock_openai_client: MockOpenAIClient):
     def transfer_to_agent2():
         return agent2
 
-    agent1 = Agent(name="Test Agent 1", functions=[transfer_to_agent2])
-    agent2 = Agent(name="Test Agent 2")
+    agent1 = Agent(name="テストエージェント1", functions=[transfer_to_agent2])
+    agent2 = Agent(name="テストエージェント2")
 
-    # set mock to return a response that triggers the handoff
+    # 引き継ぎをトリガーするレスポンスを返すようモックを設定
     mock_openai_client.set_sequential_responses(
         [
             create_mock_response(
@@ -135,9 +135,9 @@ def test_handoff(mock_openai_client: MockOpenAIClient):
         ]
     )
 
-    # set up client and run
+    # クライアントを設定し実行
     client = Swarm(client=mock_openai_client)
-    messages = [{"role": "user", "content": "I want to talk to agent 2"}]
+    messages = [{"role": "user", "content": "エージェント2と話したい"}]
     response = client.run(agent=agent1, messages=messages)
 
     assert response.agent == agent2
