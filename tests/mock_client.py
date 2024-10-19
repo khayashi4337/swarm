@@ -4,7 +4,7 @@ from openai import OpenAI
 from openai.types.chat.chat_completion import ChatCompletion, Choice
 import json
 
-
+# モックレスポンスを作成する関数
 def create_mock_response(message, function_calls=[], model="gpt-4o"):
     role = message.get("role", "assistant")
     content = message.get("content", "")
@@ -40,57 +40,60 @@ def create_mock_response(message, function_calls=[], model="gpt-4o"):
         ],
     )
 
-
+# モックのOpenAIクライアントクラス
 class MockOpenAIClient:
     def __init__(self):
         self.chat = MagicMock()
         self.chat.completions = MagicMock()
 
+    # 特定のレスポンスを返すようにモックを設定する関数
     def set_response(self, response: ChatCompletion):
         """
-        Set the mock to return a specific response.
-        :param response: A ChatCompletion response to return.
+        モックに特定のレスポンスを返すように設定します。
+        :param response: 返すべきChatCompletionレスポンス。
         """
         self.chat.completions.create.return_value = response
 
+    # 一連のレスポンスを順次返すようにモックを設定する関数
     def set_sequential_responses(self, responses: list[ChatCompletion]):
         """
-        Set the mock to return different responses sequentially.
-        :param responses: A list of ChatCompletion responses to return in order.
+        モックに異なるレスポンスを順次返すように設定します。
+        :param responses: 順番に返すべきChatCompletionレスポンスのリスト。
         """
         self.chat.completions.create.side_effect = responses
 
+    # create関数が呼ばれた際に期待される引数で呼ばれたかを検証する関数
     def assert_create_called_with(self, **kwargs):
         self.chat.completions.create.assert_called_with(**kwargs)
 
 
-# Initialize the mock client
+# モッククライアントの初期化
 client = MockOpenAIClient()
 
-# Set a sequence of mock responses
+# 一連のモックレスポンスを設定
 client.set_sequential_responses(
     [
         create_mock_response(
-            {"role": "assistant", "content": "First response"},
+            {"role": "assistant", "content": "最初のレスポンス"},
             [
                 {
                     "name": "process_refund",
-                    "args": {"item_id": "item_123", "reason": "too expensive"},
+                    "args": {"item_id": "item_123", "reason": "高すぎる"},
                 }
             ],
         ),
-        create_mock_response({"role": "assistant", "content": "Second"}),
+        create_mock_response({"role": "assistant", "content": "二番目のレスポンス"}),
     ]
 )
 
-# This should return the first mock response
+# これは最初のモックレスポンスを返すべきです
 first_response = client.chat.completions.create()
 print(
     first_response.choices[0].message
-)  # Outputs: role='agent' content='First response'
+)  # 出力: role='agent' content='最初のレスポンス'
 
-# This should return the second mock response
+# これは二番目のモックレスポンスを返すべきです
 second_response = client.chat.completions.create()
 print(
     second_response.choices[0].message
-)  # Outputs: role='agent' content='Second response'
+)  # 出力: role='agent' content='二番目のレスポンス'
