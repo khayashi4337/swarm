@@ -1,14 +1,13 @@
-# Standard library imports
+# 標準ライブラリのインポート
 import copy
 import json
 from collections import defaultdict
 from typing import List, Callable, Union
 
-# Package/library imports
+# パッケージ/ライブラリのインポート
 from openai import OpenAI
 
-
-# Local imports
+# ローカルのインポート
 from .util import function_to_json, debug_print, merge_chunk
 from .types import (
     Agent,
@@ -20,15 +19,17 @@ from .types import (
     Result,
 )
 
-__CTX_VARS_NAME__ = "context_variables"
+__CTX_VARS_NAME__ = "context_variables"  # コンテキスト変数の名称
 
-
+# Swarmクラス
 class Swarm:
     def __init__(self, client=None):
+        # クライアントの初期化
         if not client:
             client = OpenAI()
         self.client = client
 
+    # チャットコンプリート（エージェントとのやり取り）を取得するメソッド
     def get_chat_completion(
         self,
         agent: Agent,
@@ -38,23 +39,27 @@ class Swarm:
         stream: bool,
         debug: bool,
     ) -> ChatCompletionMessage:
+        # コンテキスト変数のデフォルト値を設定
         context_variables = defaultdict(str, context_variables)
+        # エージェントの指示を取得
         instructions = (
             agent.instructions(context_variables)
             if callable(agent.instructions)
             else agent.instructions
         )
         messages = [{"role": "system", "content": instructions}] + history
-        debug_print(debug, "Getting chat completion for...:", messages)
+        debug_print(debug, "チャットコンプリートの取得中...:", messages)
 
+        # ツールのJSON表現を取得
         tools = [function_to_json(f) for f in agent.functions]
-        # hide context_variables from model
+        # context_variablesをモデルから隠す
         for tool in tools:
             params = tool["function"]["parameters"]
             params["properties"].pop(__CTX_VARS_NAME__, None)
             if __CTX_VARS_NAME__ in params["required"]:
                 params["required"].remove(__CTX_VARS_NAME__)
 
+        # チャットコンプリートの生成パラメータを設定
         create_params = {
             "model": model_override or agent.model,
             "messages": messages,
@@ -63,16 +68,17 @@ class Swarm:
             "stream": stream,
         }
 
+        # ツールがある場合、並列ツール呼び出しを設定
         if tools:
             create_params["parallel_tool_calls"] = agent.parallel_tool_calls
 
         return self.client.chat.completions.create(**create_params)
 
+    # 関数の結果を処理するメソッド
     def handle_function_result(self, result, debug) -> Result:
         match result:
             case Result() as result:
                 return result
-
             case Agent() as agent:
                 return Result(
                     value=json.dumps({"assistant": agent.name}),
@@ -82,10 +88,11 @@ class Swarm:
                 try:
                     return Result(value=str(result))
                 except Exception as e:
-                    error_message = f"Failed to cast response to string: {result}. Make sure agent functions return a string or Result object. Error: {str(e)}"
+                    error_message = f"レスポンスを文字列にキャストできませんでした: {result}. エージェント関数は文字列またはResultオブジェクトを返す必要があります。エラー: {str(e)}"
                     debug_print(debug, error_message)
                     raise TypeError(error_message)
 
+    # ツール呼び出しを処理するメソッド
     def handle_tool_calls(
         self,
         tool_calls: List[ChatCompletionMessageToolCall],
@@ -93,30 +100,29 @@ class Swarm:
         context_variables: dict,
         debug: bool,
     ) -> Response:
+        # 関数名と対応する関数のマッピングを作成
         function_map = {f.__name__: f for f in functions}
-        partial_response = Response(
-            messages=[], agent=None, context_variables={})
+        partial_response = Response(messages=[], agent=None, context_variables={})
 
         for tool_call in tool_calls:
             name = tool_call.function.name
-            # handle missing tool case, skip to next tool
+            # ツールが見つからない場合の処理
             if name not in function_map:
-                debug_print(debug, f"Tool {name} not found in function map.")
+                debug_print(debug, f"ツール {name} が関数マップに見つかりません。")
                 partial_response.messages.append(
                     {
                         "role": "tool",
                         "tool_call_id": tool_call.id,
                         "tool_name": name,
-                        "content": f"Error: Tool {name} not found.",
+                        "content": f"エラー: ツール {name} が見つかりません。",
                     }
                 )
                 continue
             args = json.loads(tool_call.function.arguments)
-            debug_print(
-                debug, f"Processing tool call: {name} with arguments {args}")
+            debug_print(debug, f"ツール呼び出しを処理中: {name} 引数 {args}")
 
             func = function_map[name]
-            # pass context_variables to agent functions
+            # コンテキスト変数をエージェント関数に渡す
             if __CTX_VARS_NAME__ in func.__code__.co_varnames:
                 args[__CTX_VARS_NAME__] = context_variables
             raw_result = function_map[name](**args)
@@ -136,6 +142,7 @@ class Swarm:
 
         return partial_response
 
+    # デモループを実行し、ストリーミング対応で返すメソッド
     def run_and_stream(
         self,
         agent: Agent,
@@ -167,7 +174,7 @@ class Swarm:
                 ),
             }
 
-            # get completion with current history, agent
+            # 現在の履歴とエージェントでコンプリートを取得
             completion = self.get_chat_completion(
                 agent=active_agent,
                 history=history,
@@ -188,18 +195,17 @@ class Swarm:
                 merge_chunk(message, delta)
             yield {"delim": "end"}
 
-            message["tool_calls"] = list(
-                message.get("tool_calls", {}).values())
+            message["tool_calls"] = list(message.get("tool_calls", {}).values())
             if not message["tool_calls"]:
                 message["tool_calls"] = None
-            debug_print(debug, "Received completion:", message)
+            debug_print(debug, "コンプリートを受信:", message)
             history.append(message)
 
             if not message["tool_calls"] or not execute_tools:
-                debug_print(debug, "Ending turn.")
+                debug_print(debug, "ターンを終了します。")
                 break
 
-            # convert tool_calls to objects
+            # ツール呼び出しをオブジェクトに変換
             tool_calls = []
             for tool_call in message["tool_calls"]:
                 function = Function(
@@ -211,7 +217,7 @@ class Swarm:
                 )
                 tool_calls.append(tool_call_object)
 
-            # handle function calls, updating context_variables, and switching agents
+            # 関数呼び出しを処理し、コンテキスト変数を更新し、エージェントを切り替える
             partial_response = self.handle_tool_calls(
                 tool_calls, active_agent.functions, context_variables, debug
             )
@@ -228,6 +234,7 @@ class Swarm:
             )
         }
 
+    # デモループを実行するメソッド（ストリーミングなし）
     def run(
         self,
         agent: Agent,
@@ -256,7 +263,7 @@ class Swarm:
 
         while len(history) - init_len < max_turns and active_agent:
 
-            # get completion with current history, agent
+            # 現在の履歴とエージェントでコンプリートを取得
             completion = self.get_chat_completion(
                 agent=active_agent,
                 history=history,
@@ -266,17 +273,15 @@ class Swarm:
                 debug=debug,
             )
             message = completion.choices[0].message
-            debug_print(debug, "Received completion:", message)
+            debug_print(debug, "コンプリートを受信:", message)
             message.sender = active_agent.name
-            history.append(
-                json.loads(message.model_dump_json())
-            )  # to avoid OpenAI types (?)
+            history.append(json.loads(message.model_dump_json()))
 
             if not message.tool_calls or not execute_tools:
-                debug_print(debug, "Ending turn.")
+                debug_print(debug, "ターンを終了します。")
                 break
 
-            # handle function calls, updating context_variables, and switching agents
+            # 関数呼び出しを処理し、コンテキスト変数を更新し、エージェントを切り替える
             partial_response = self.handle_tool_calls(
                 message.tool_calls, active_agent.functions, context_variables, debug
             )
