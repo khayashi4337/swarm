@@ -1,21 +1,20 @@
-# Personal shopper
+# パーソナルショッパー
 
-This Swarm is a personal shopping agent that can help with making sales and refunding orders.
-This example uses the helper function `run_demo_loop`, which allows us to create an interactive Swarm session.
-In this example, we also use a Sqlite3 database with customer information and transaction data.
+この Swarm は、販売や注文の返金をサポートするパーソナルショッピングエージェントです。この例では、`run_demo_loop` というヘルパー関数を使用して、インタラクティブな Swarm セッションを作成します。また、この例では、顧客情報と取引データを含む Sqlite3 データベースも使用しています。
 
-## Overview
+## 概要
 
-The personal shopper example includes three main agents to handle various customer service requests:
+パーソナルショッパーの例では、主に 3 つのエージェントがさまざまなカスタマーサービスリクエストに対応します。
 
-1. **Triage Agent**: Determines the type of request and transfers to the appropriate agent.
-2. **Refund Agent**: Manages customer refunds, requiring both user ID and item ID to initiate a refund.
-3. **Sales Agent**: Handles actions related to placing orders, requiring both user ID and product ID to complete a purchase.
+1. **トリアージエージェント**: リクエストの種類を判別し、適切なエージェントに転送します。
+2. **返金エージェント**: 顧客の返金処理を管理し、返金を開始するためにユーザー ID とアイテム ID が必要です。
+3. **販売エージェント**: 注文に関連するアクションを処理し、購入を完了するためにユーザー ID と商品 ID が必要です。
 
-## Setup
+## セットアップ
 
-Once you have installed dependencies and Swarm, run the example using:
+依存関係と Swarm をインストールした後、次のコマンドを使用して例を実行します。
 
 ```shell
 python3 main.py
 ```
+
