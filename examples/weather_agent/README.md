@@ -1,27 +1,25 @@
 # Weather agent
 
-This example is a weather agent demonstrating function calling with a single agent. The agent has tools to get the weather of a particular city, and send an email.
+この例は、単一のエージェントによる関数呼び出しを示す天気情報エージェントです。このエージェントには、特定の都市の天気を取得するツールと、メールを送信する機能があります。
 
-## Setup
+## セットアップ
 
-To run the weather agent Swarm:
+天気情報エージェントSwarmを実行するには：
 
-1. Run
+1. 次のコマンドを実行してください。
 
 ```shell
 python3 run.py
 ```
 
-## Evals
+## 評価（Evals）
 
-> [!NOTE]
-> These evals are intended to be examples to demonstrate functionality, but will have to be updated and catered to your particular use case.
+> [!注意]
+> これらの評価は機能をデモするための例として作成されていますが、特定のユースケースに合わせて更新が必要です。
 
-This example uses `Pytest` to run eval unit tests. We have two tests in the `evals.py` file, one which
-tests if we call the `get_weather` function when expected, and one which assesses if we properly do NOT call the
-`get_weather` function when we shouldn't have a tool call.
+この例では、`Pytest`を使用して評価単体テストを実行します。`evals.py`ファイルには2つのテストが含まれており、1つは`get_weather`関数が期待通りに呼び出されるかをテストし、もう1つは呼び出してはいけない場合に`get_weather`関数が適切に呼び出されないことをテストします。
 
-To run the evals, run
+評価を実行するには、以下のコマンドを使用します。
 
 ```shell
 pytest evals.py
