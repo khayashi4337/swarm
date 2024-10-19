@@ -1,8 +1,12 @@
 version: '3.4'
 services:
   qdrant:
-    image: qdrant/qdrant:v1.3.0
-    restart: on-failure
+    image: qdrant/qdrant:v1.3.0  # 使用する Qdrant のバージョン
+    restart: on-failure  # コンテナがエラーで停止した場合に再起動
     ports:
-      - "6333:6333"
-      - "6334:6334"
+      - "6333:6333"  # Qdrant のメイン API ポート
+      - "6334:6334"  # Qdrant の追加ポート
+
+# Qdrant の説明
+# Qdrant はベクトル検索エンジンで、ベクトルデータ（例えば埋め込みベクトル）を効率的に保存・検索するために設計されたデータベースです。
+# 主に、類似検索やレコメンデーションシステムの構築に利用され、機械学習や自然言語処理などのアプリケーションで使用されます。
