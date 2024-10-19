@@ -12,15 +12,15 @@ english_agent = Agent(
 
 # 日本語エージェントの設定
 # ユーザーとの対話は日本語のみで行います。
-spanish_agent = Agent(
+japanese_agent = Agent(
     name="日本語エージェント",
     instructions="あなたは日本語のみを話します。",
 )
 
 # 日本語エージェントに移行する関数
 # 日本語を話すユーザーを直ちに日本語エージェントに転送します。
-def transfer_to_spanish_agent():
-    return spanish_agent
+def transfer_to_japanese_agent():
+    return japanese_agent
 
 # 英語エージェントに日本語エージェントへの転送機能を追加
 english_agent.functions.append(transfer_to_spanish_agent)
