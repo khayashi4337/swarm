@@ -1,38 +1,47 @@
 from swarm import Swarm, Agent
 
+# Swarm クライアントを作成
 client = Swarm()
 
-
+# コンテキスト変数を使用して挨拶の指示を作成する関数
+# ユーザーの名前を取得し、挨拶に使用します。
 def instructions(context_variables):
-    name = context_variables.get("name", "User")
-    return f"You are a helpful agent. Greet the user by name ({name})."
+    name = context_variables.get("name", "ユーザー")
+    return f"あなたは親切なエージェントです。ユーザーに名前（{name}）で挨拶してください。"
 
-
+# アカウントの詳細を出力する関数
+# ユーザーIDと名前を使用してアカウントの詳細を表示します。
 def print_account_details(context_variables: dict):
     user_id = context_variables.get("user_id", None)
     name = context_variables.get("name", None)
-    print(f"Account Details: {name} {user_id}")
-    return "Success"
+    print(f"アカウント詳細: {name} {user_id}")
+    return "成功"
 
-
+# エージェントの設定
+# 指示関数とアカウントの詳細を表示する機能を持つエージェントです。
 agent = Agent(
-    name="Agent",
+    name="エージェント",
     instructions=instructions,
     functions=[print_account_details],
 )
 
-context_variables = {"name": "James", "user_id": 123}
+# コンテキスト変数の設定
+context_variables = {"name": "ジェームズ", "user_id": 123}
 
+# メッセージをエージェントに送信し、会話を実行
 response = client.run(
-    messages=[{"role": "user", "content": "Hi!"}],
+    messages=[{"role": "user", "content": "こんにちは！"}],
     agent=agent,
     context_variables=context_variables,
 )
+# 最後のメッセージ内容を出力
 print(response.messages[-1]["content"])
 
+# アカウントの詳細を表示するリクエストをエージェントに送信し、会話を実行
 response = client.run(
-    messages=[{"role": "user", "content": "Print my account details!"}],
+    messages=[{"role": "user", "content": "私のアカウントの詳細を表示してください！"}],
     agent=agent,
     context_variables=context_variables,
 )
+# 最後のメッセージ内容を出力
 print(response.messages[-1]["content"])
